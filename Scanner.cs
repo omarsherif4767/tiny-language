@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -28,7 +28,8 @@ namespace Tiny
             ReservedWords.Add("int", Token_Class.Int);
             ReservedWords.Add("float", Token_Class.Float);
             ReservedWords.Add("string", Token_Class.String);
-            ReservedWords.Add("endl", Token_Class.Identifier); // treat as identifier
+            ReservedWords.Add("endl", Token_Class.Endl);
+            ReservedWords.Add("until", Token_Class.Until);
 
             // Operators & symbols
             Operators.Add(":=", Token_Class.Assign);
@@ -39,6 +40,7 @@ namespace Tiny
             Operators.Add("<", Token_Class.LessThanOp);
             Operators.Add(">", Token_Class.GreaterThanOp);
             Operators.Add("=", Token_Class.EqualOp);
+            Operators.Add("<>", Token_Class.NotEqualOp); // ✅ FIXED
             Operators.Add("&&", Token_Class.AndOp);
             Operators.Add("||", Token_Class.OrOp);
             Operators.Add("(", Token_Class.LParanthesis);
@@ -46,9 +48,9 @@ namespace Tiny
             Operators.Add(";", Token_Class.Semicolon);
             Operators.Add(",", Token_Class.Comma);
 
-            // braces 
-            Operators.Add("{", Token_Class.LParanthesis);
-            Operators.Add("}", Token_Class.RParanthesis);
+            // Braces
+            Operators.Add("{", Token_Class.LBrace);
+            Operators.Add("}", Token_Class.RBrace);
         }
 
         public void StartScanning(string code)
@@ -63,7 +65,7 @@ namespace Tiny
 
                 string lex = c.ToString();
 
-                //  Two-character operators
+                // Two-character operators (:=, &&, ||, <>)
                 if (i + 1 < code.Length)
                 {
                     string two = lex + code[i + 1];
@@ -75,7 +77,7 @@ namespace Tiny
                     }
                 }
 
-                //  STRING
+                // STRING
                 if (c == '"')
                 {
                     int j = i + 1;
@@ -92,7 +94,7 @@ namespace Tiny
                     i = j;
                 }
 
-                //  COMMENT
+                // COMMENT /* ... */
                 else if (c == '/' && i + 1 < code.Length && code[i + 1] == '*')
                 {
                     i += 2;
@@ -121,7 +123,7 @@ namespace Tiny
                     i = j - 1;
                 }
 
-                //  NUMBER (int + float)
+                // NUMBER (int + float)
                 else if (char.IsDigit(c))
                 {
                     int j = i;
@@ -137,7 +139,7 @@ namespace Tiny
                     i = j - 1;
                 }
 
-                //  SINGLE SYMBOL
+                // SINGLE SYMBOL
                 else
                 {
                     AddToken(lex);
