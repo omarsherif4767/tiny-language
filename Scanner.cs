@@ -1,8 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Tiny
 {
@@ -40,21 +37,22 @@ namespace Tiny
             Operators.Add("<", Token_Class.LessThanOp);
             Operators.Add(">", Token_Class.GreaterThanOp);
             Operators.Add("=", Token_Class.EqualOp);
-            Operators.Add("<>", Token_Class.NotEqualOp); // ✅ FIXED
+            Operators.Add("<>", Token_Class.NotEqualOp);
             Operators.Add("&&", Token_Class.AndOp);
             Operators.Add("||", Token_Class.OrOp);
             Operators.Add("(", Token_Class.LParanthesis);
             Operators.Add(")", Token_Class.RParanthesis);
             Operators.Add(";", Token_Class.Semicolon);
             Operators.Add(",", Token_Class.Comma);
-
-            // Braces
             Operators.Add("{", Token_Class.LBrace);
             Operators.Add("}", Token_Class.RBrace);
         }
 
         public void StartScanning(string code)
         {
+            Tokens.Clear();
+            Errors.Error_List.Clear();
+
             for (int i = 0; i < code.Length; i++)
             {
                 char c = code[i];
@@ -65,19 +63,27 @@ namespace Tiny
 
                 string lex = c.ToString();
 
-                // Two-character operators (:=, &&, ||, <>)
-                if (i + 1 < code.Length)
+                //  COMMENT 
+                if (c == '/' && i + 1 < code.Length && code[i + 1] == '*')
                 {
-                    string two = lex + code[i + 1];
-                    if (Operators.ContainsKey(two))
+                    i += 2;
+
+                    while (i + 1 < code.Length && !(code[i] == '*' && code[i + 1] == '/'))
                     {
-                        AddToken(two);
                         i++;
-                        continue;
                     }
+
+                    if (i + 1 >= code.Length)
+                    {
+                        Errors.Error_List.Add("Unclosed comment");
+                        return;
+                    }
+
+                    i++; // skip *
+                    continue;
                 }
 
-                // STRING
+                //  STRING 
                 if (c == '"')
                 {
                     int j = i + 1;
@@ -89,26 +95,32 @@ namespace Tiny
                         j++;
                     }
 
+                    if (j >= code.Length)
+                    {
+                        Errors.Error_List.Add("Unclosed string");
+                        return;
+                    }
+
                     lex += "\"";
                     AddToken(lex);
                     i = j;
+                    continue;
                 }
 
-                // COMMENT /* ... */
-                else if (c == '/' && i + 1 < code.Length && code[i + 1] == '*')
+                //  TWO-CHAR OPERATORS 
+                if (i + 1 < code.Length)
                 {
-                    i += 2;
-
-                    while (i + 1 < code.Length && !(code[i] == '*' && code[i + 1] == '/'))
+                    string two = lex + code[i + 1];
+                    if (Operators.ContainsKey(two))
                     {
+                        AddToken(two);
                         i++;
+                        continue;
                     }
-
-                    i++; // skip */
                 }
 
-                // IDENTIFIER / RESERVED
-                else if (char.IsLetter(c))
+                //  IDENTIFIER / RESERVED 
+                if (char.IsLetter(c))
                 {
                     int j = i;
                     lex = "";
@@ -121,29 +133,32 @@ namespace Tiny
 
                     AddToken(lex);
                     i = j - 1;
+                    continue;
                 }
 
-                // NUMBER (int + float)
-                else if (char.IsDigit(c))
+                // ================= NUMBER =================
+                if (char.IsDigit(c))
                 {
                     int j = i;
                     lex = "";
+                    bool hasDot = false;
 
-                    while (j < code.Length && (char.IsDigit(code[j]) || code[j] == '.'))
+                    while (j < code.Length &&
+                           (char.IsDigit(code[j]) || (!hasDot && code[j] == '.')))
                     {
+                        if (code[j] == '.') hasDot = true;
+
                         lex += code[j];
                         j++;
                     }
 
                     AddToken(lex);
                     i = j - 1;
+                    continue;
                 }
 
-                // SINGLE SYMBOL
-                else
-                {
-                    AddToken(lex);
-                }
+                //  SINGLE SYMBOL 
+                AddToken(lex);
             }
         }
 
