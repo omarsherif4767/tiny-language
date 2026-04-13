@@ -6,3 +6,11 @@ E:\Data structure\Tiny\Tiny\bin\Debug\Tiny.pdb
 E:\Data structure\Tiny\Tiny\obj\Debug\Tiny.exe
 E:\Data structure\Tiny\Tiny\obj\Debug\Tiny.pdb
 E:\Data structure\Tiny\Tiny\obj\Debug\Tiny.exe.config
+C:\Users\mahmo\source\repos\mahmoud-badwy\tiny-compiler\bin\Debug\Tiny.exe.config
+C:\Users\mahmo\source\repos\mahmoud-badwy\tiny-compiler\bin\Debug\Tiny.exe
+C:\Users\mahmo\source\repos\mahmoud-badwy\tiny-compiler\bin\Debug\Tiny.pdb
+C:\Users\mahmo\source\repos\mahmoud-badwy\tiny-compiler\obj\Debug\Tiny.csproj.AssemblyReference.cache
+C:\Users\mahmo\source\repos\mahmoud-badwy\tiny-compiler\obj\Debug\Tiny.exe.config
+C:\Users\mahmo\source\repos\mahmoud-badwy\tiny-compiler\obj\Debug\Tiny.csproj.CoreCompileInputs.cache
+C:\Users\mahmo\source\repos\mahmoud-badwy\tiny-compiler\obj\Debug\Tiny.exe
+C:\Users\mahmo\source\repos\mahmoud-badwy\tiny-compiler\obj\Debug\Tiny.pdb
