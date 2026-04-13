@@ -24,6 +24,7 @@ namespace Tiny
             textBox1.Text = string.Empty;
             textBox2.Clear();
             dataGridView1.Rows.Clear();
+            statusLabel.Text = "Ready to scan the input text.";
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
@@ -42,6 +43,7 @@ namespace Tiny
             textBox2.Clear();
             dataGridView1.Rows.Clear();
             Errors.Error_List.Clear();
+            statusLabel.Text = "Workspace cleared.";
         }
 
         private void CompileSource(string sourceCode)
@@ -66,6 +68,8 @@ namespace Tiny
             {
                 textBox2.Text = "No Errors";
             }
+
+            statusLabel.Text = $"Compiled {scanner.Tokens.Count} token(s) with {Errors.Error_List.Count} error(s).";
         }
     }
 }
