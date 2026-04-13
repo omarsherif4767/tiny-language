@@ -5,24 +5,30 @@ using System.Text;
 using System.Threading.Tasks;
 
 
+
 namespace Tiny
 {
     public enum Token_Class
     {
-        //  Reserved Words
+        // Reserved Words
         If, Repeat, Read, Write, Then, Else, ElseIf, End, Return,
-        Int, Float, String, Endl, Until,
+        Int, Float, String, Endl, Until, Main,
 
-        //  Symbols
-        LParanthesis, RParanthesis, Semicolon, Comma,
+        // Symbols
+        LParanthesis, RParanthesis,
+        LBracket, RBracket,        
+        Semicolon, Comma,
         LBrace, RBrace,
 
-        //  Operators
+        // Operators
         Assign, PlusOp, MinusOp, MultiplyOp, DivideOp,
         LessThanOp, GreaterThanOp, EqualOp, NotEqualOp,
         AndOp, OrOp,
 
-        //  General
-        Identifier, Number, StringValue
+        // General
+        Identifier, Number, StringValue,
+
+        
+        
     }
 }

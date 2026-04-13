@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace Tiny
@@ -27,6 +27,7 @@ namespace Tiny
             ReservedWords.Add("string", Token_Class.String);
             ReservedWords.Add("endl", Token_Class.Endl);
             ReservedWords.Add("until", Token_Class.Until);
+            ReservedWords.Add("main", Token_Class.Main);
 
             // Operators & symbols
             Operators.Add(":=", Token_Class.Assign);
@@ -40,8 +41,11 @@ namespace Tiny
             Operators.Add("<>", Token_Class.NotEqualOp);
             Operators.Add("&&", Token_Class.AndOp);
             Operators.Add("||", Token_Class.OrOp);
+
             Operators.Add("(", Token_Class.LParanthesis);
             Operators.Add(")", Token_Class.RParanthesis);
+            Operators.Add("[", Token_Class.LBracket);
+            Operators.Add("]", Token_Class.RBracket);
             Operators.Add(";", Token_Class.Semicolon);
             Operators.Add(",", Token_Class.Comma);
             Operators.Add("{", Token_Class.LBrace);
@@ -69,9 +73,7 @@ namespace Tiny
                     i += 2;
 
                     while (i + 1 < code.Length && !(code[i] == '*' && code[i + 1] == '/'))
-                    {
                         i++;
-                    }
 
                     if (i + 1 >= code.Length)
                     {
@@ -79,7 +81,7 @@ namespace Tiny
                         return;
                     }
 
-                    i++; // skip *
+                    i++;
                     continue;
                 }
 
@@ -119,46 +121,95 @@ namespace Tiny
                     }
                 }
 
-                //  IDENTIFIER / RESERVED 
-                if (char.IsLetter(c))
+                //  INVALID START (like ?omar) 
+                if (!char.IsLetterOrDigit(c) && !Operators.ContainsKey(lex))
                 {
                     int j = i;
                     lex = "";
 
-                    while (j < code.Length && char.IsLetterOrDigit(code[j]))
+                    while (j < code.Length &&
+                           !char.IsWhiteSpace(code[j]) &&
+                           !Operators.ContainsKey(code[j].ToString()))
                     {
                         lex += code[j];
                         j++;
                     }
 
-                    AddToken(lex);
+                    Errors.Error_List.Add("Invalid token: " + lex);
                     i = j - 1;
                     continue;
                 }
 
-                // NUMBER 
-                if (char.IsDigit(c))
+                //  UNIFIED WORD 
+                if (char.IsLetter(c) || char.IsDigit(c))
                 {
                     int j = i;
                     lex = "";
-                    bool hasDot = false;
 
                     while (j < code.Length &&
-                           (char.IsDigit(code[j]) || (!hasDot && code[j] == '.')))
+                           !char.IsWhiteSpace(code[j]) &&
+                           !Operators.ContainsKey(code[j].ToString()))
                     {
-                        if (code[j] == '.') hasDot = true;
-
                         lex += code[j];
                         j++;
                     }
 
-                    AddToken(lex);
+                    bool isNumber = true;
+                    bool hasDot = false;
+                    bool invalid = false;
+
+                    foreach (char ch in lex)
+                    {
+                        if (char.IsLetter(ch))
+                        {
+                            isNumber = false;
+                        }
+                        else if (char.IsDigit(ch))
+                        {
+                            // ok
+                        }
+                        else if (ch == '.')
+                        {
+                            if (hasDot)
+                                invalid = true;
+
+                            hasDot = true;
+                        }
+                        else
+                        {
+                            invalid = true;
+                        }
+                    }
+
+                    if (invalid)
+                    {
+                        Errors.Error_List.Add("Invalid token: " + lex);
+                    }
+                    else if (char.IsLetter(lex[0]))
+                    {
+                        AddToken(lex);
+                    }
+                    else if (char.IsDigit(lex[0]))
+                    {
+                        if (lex.IndexOfAny("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray()) != -1)
+                            Errors.Error_List.Add("Invalid number: " + lex);
+                        else
+                            AddToken(lex);
+                    }
+
                     i = j - 1;
                     continue;
                 }
 
                 //  SINGLE SYMBOL 
-                AddToken(lex);
+                if (Operators.ContainsKey(lex))
+                {
+                    AddToken(lex);
+                }
+                else
+                {
+                    Errors.Error_List.Add("Unknown token: " + lex);
+                }
             }
         }
 
@@ -184,8 +235,8 @@ namespace Tiny
 
             else
             {
-                t.token_type = Token_Class.Identifier;
                 Errors.Error_List.Add("Unknown token: " + lex);
+                return;
             }
 
             Tokens.Add(t);
