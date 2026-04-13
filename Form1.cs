@@ -12,6 +12,8 @@ namespace Tiny
 {
     public partial class Form1 : Form
     {
+        private readonly Scanner scanner = new Scanner();
+
         public Form1()
         {
             InitializeComponent();
@@ -19,7 +21,9 @@ namespace Tiny
 
         private void Form1_Load(object sender, EventArgs e)
         {
-
+            textBox1.Text = string.Empty;
+            textBox2.Clear();
+            dataGridView1.Rows.Clear();
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
@@ -29,12 +33,24 @@ namespace Tiny
 
         private void button1_Click(object sender, EventArgs e)
         {
+            CompileSource(textBox1.Text);
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            textBox1.Clear();
+            textBox2.Clear();
+            dataGridView1.Rows.Clear();
+            Errors.Error_List.Clear();
+        }
+
+        private void CompileSource(string sourceCode)
+        {
             dataGridView1.Rows.Clear();
             textBox2.Clear();
             Errors.Error_List.Clear();
 
-            Scanner scanner = new Scanner();
-            scanner.StartScanning(textBox1.Text);
+            scanner.StartScanning(sourceCode);
 
             foreach (var token in scanner.Tokens)
             {
