@@ -75,7 +75,7 @@ namespace Tiny
                     while (i + 1 < code.Length && !(code[i] == '*' && code[i + 1] == '/'))
                         i++;
 
-                    if (i + 1 >= code.Length)
+                    if (i + 1 >= code.Length) // end without */
                     {
                         Errors.Error_List.Add("Unclosed comment");
                         return;
@@ -112,7 +112,7 @@ namespace Tiny
                 //  TWO-CHAR OPERATORS 
                 if (i + 1 < code.Length)
                 {
-                    string two = lex + code[i + 1];
+                    string two = lex + code[i + 1]; // combine first two charachters
                     if (Operators.ContainsKey(two))
                     {
                         AddToken(two);
@@ -129,7 +129,7 @@ namespace Tiny
 
                     while (j < code.Length &&
                            !char.IsWhiteSpace(code[j]) &&
-                           !Operators.ContainsKey(code[j].ToString()))
+                           !Operators.ContainsKey(code[j].ToString())) // to make sure ?omar taken as whole
                     {
                         lex += code[j];
                         j++;
@@ -170,14 +170,14 @@ namespace Tiny
                         }
                         else if (ch == '.')
                         {
-                            if (hasDot)
+                            if (hasDot) // second dot
                                 invalid = true;
 
                             hasDot = true;
                         }
                         else
                         {
-                            invalid = true;
+                            invalid = true;//mark first dot
                         }
                     }
 
@@ -191,7 +191,7 @@ namespace Tiny
                     }
                     else if (char.IsDigit(lex[0]))
                     {
-                        if (lex.IndexOfAny("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray()) != -1)
+                        if (lex.IndexOfAny("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray()) != -1) // to handle 2counter 
                             Errors.Error_List.Add("Invalid number: " + lex);
                         else
                             AddToken(lex);
@@ -208,7 +208,7 @@ namespace Tiny
                 }
                 else
                 {
-                    Errors.Error_List.Add("Unknown token: " + lex);
+                    Errors.Error_List.Add("Unknown token: " + lex); // & @
                 }
             }
         }
